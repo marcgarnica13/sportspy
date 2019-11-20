@@ -155,11 +155,12 @@ def run(test_file, input_folder, output_file):
     while (wb_idx <= controler.max_row):
         row_start_time = time.time()
         logger.info('Processing row {} out of {}'.format(wb_idx, test_file_rows))
+        logger_tag = "{} / {}".format(wb_idx, test_file_rows)
         row = controler[wb_idx]
         #Iniciar partido
         t_before = time.time()
         logger.info('Loading {} match information'.format(row[header_dict['Pdata']]))
-        load_result = m.load_match(row[header_dict['Pdata']].value, row[header_dict['MatchInformation']].value)
+        load_result = m.load_match(logger_tag, row[header_dict['Pdata']].value, row[header_dict['MatchInformation']].value)
         if load_result:
             logger.info("Loading successfull after {} seconds".format(time.time() - t_before))
             #Set sub
@@ -206,6 +207,7 @@ def run(test_file, input_folder, output_file):
         column_count += 1
     result_wb.save(filename=os.path.join(output_file, 'test.xlsx').format(output_file))
     result_wb.close()
+    logger.info('Test finished in {} seconds'.format(time.time() - run_start_time))
 
 
 
