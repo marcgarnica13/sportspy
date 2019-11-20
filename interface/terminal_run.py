@@ -119,7 +119,6 @@ def add_debug_log(folder, logger):
 def run(test_file, input_folder, output_file):
     run_start_time = time.time()
     check_folder('logs')
-    print(os.getcwd())
     logging.config.fileConfig(fname=os.path.join('logging.ini'))
     logger = logging.getLogger()
     output_file = output_file or os.path.join('test')
@@ -130,7 +129,7 @@ def run(test_file, input_folder, output_file):
     logger.info('- Test output folder: {}'.format(output_file))
     m = Match(input_folder, logger)
     t_before = time.time()
-    logger.debug('Match instance initialized in {} seconds'.format(time.time() - run_start_time))
+    logger.debug('Match instance initialized in {} seconds'.format(time.time() - t_before))
     logger.info('Reading test controller file')
     t_before = time.time()
     controler = load_workbook(test_file).get_sheet_by_name('Subs')
@@ -194,7 +193,7 @@ def run(test_file, input_folder, output_file):
             logger.debug('Finally adding {} columns to the result'.format(column_count))
             result_row_count += 1
         else:
-            logger.info("Loading failed after {} seconds".format(time.time(), row_start_time))
+            logger.info("Loading failed after {} seconds".format(time.time(), t_before))
         logger.debug('Row processed in {} seconds'.format(time.time() - row_start_time))
         logger.info('Row {} finished'.format(wb_idx))
         wb_idx += 1

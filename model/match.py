@@ -95,7 +95,7 @@ class Match:
             self.lg.debug('{} > - Team collective distance to nearest opponent: {} seconds'.format(self.tag, distance_opp_time - dyadic_time))
 
             for e in [first_slice['possession'] == self.location, first_slice['possession'] != self.location]:
-                self.lg.debug('{} > Testing with possession {}'.format(self.tag, e))
+                self.lg.debug('{} > Testing with possession'.format(self.tag))
                 poss_filtered = first_slice[e]
                 result_centroid += [v for index, v in enumerate(self.team_centroid(poss_filtered[home_players_list], h_factor, poss_filtered[guest_players_list], g_factor)) if index in indexes]
                 result_distance.append(self.distance_nearest_opp_ind(player, [poss_filtered[home_players_list], poss_filtered[guest_players_list]], self.location))
@@ -106,7 +106,6 @@ class Match:
                 result_distance_opp.append((self.distance_nearest_opp([poss_filtered[home_players_list], poss_filtered[guest_players_list]], self.location)))
 
         return result_centroid + result_distance + result_team_mesures + result_stretch + result_distance_centroid + result_dyadic + result_distance_opp
-
 
     def _list_players(self, data_slice, team):
         self.lg.debug('{} > _list_players function'.format(self.tag))
