@@ -162,8 +162,7 @@ class Match:
         self.lg.info('{} > Computing team mesures'.format(self.tag))
         length = np.max(pdata.iloc[:, 0::2], 1) - np.min(pdata.iloc[:, 0::2], 1)
         width = np.max(pdata.iloc[:, 1::2], 1) - np.min(pdata.iloc[:, 1::2], 1)
-        return [np.mean(length), np.mean(width),
-                (np.mean(length / width))]
+        return [np.mean(length), np.mean(width), (np.mean(length / width))]
 
     # Stretch index, distancia media de todos los jugadores al team centroid#
     def stretch_index(self, pdata):
@@ -205,7 +204,6 @@ class Match:
                     np.sqrt(np.sum((pdata[:, (p * 2):((p + 1) * 2)] - pdata[:, (o * 2):((o + 1) * 2)]) ** 2, axis=1)))
         distances[distances == 0] = ['nan']
         return np.nanmean(distances)
-
     # Distance to nearest opponent#
     def distance_nearest_opp(self, list_of_slices, loc):
         self.lg.info('{} > Computing team distance to nearest opponents'.format(self.tag))

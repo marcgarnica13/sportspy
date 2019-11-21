@@ -176,21 +176,25 @@ def run(test_file, input_folder, output_file):
             )
             #Compute vars
             t_before = time.time()
-            test_results = m.run_test()
-            logger.info('Test results obtained in {} seconds'.format(time.time() - t_before))
-            logger.debug(test_results)
-            #Save results
-            column_count = 1
-            logger.info('Saving results to excel worksheet')
-            logger.debug('Saving test data')
-            for key,item in header_dict.items():
-                result_wb_sheet.cell(row=result_row_count, column=item + 1).value = row[item].value
-                column_count += 1
-            logger.debug('Added {} columns to the result from the test file'.format(column_count))
-            for i, value in enumerate(test_results):
-                result_wb_sheet.cell(row=result_row_count, column=column_count).value = value
-                column_count += 1
-            logger.debug('Finally adding {} columns to the result'.format(column_count))
+            try:
+                test_results = m.run_test()
+                logger.info('Test results obtained in {} seconds'.format(time.time() - t_before))
+                logger.debug(test_results)
+                #Save results
+                column_count = 1
+                logger.info('Saving results to excel worksheet')
+                logger.debug('Saving test data')
+                logger.debug('### {}'.format(test_results))
+                for key,item in header_dict.items():
+                    result_wb_sheet.cell(row=result_row_count, column=item + 1).value = row[item].value
+                    column_count += 1
+                logger.debug('Added {} columns to the result from the test file'.format(column_count))
+                for i, value in enumerate(test_results):
+                    result_wb_sheet.cell(row=result_row_count, column=column_count).value = value
+                    column_count += 1
+                logger.debug('Finally adding {} columns to the result'.format(column_count))
+            except Exception as e:
+                logging.error('Error running this test:', exc_info=e)
             result_row_count += 1
         else:
             logger.info("Loading failed after {} seconds".format(time.time(), t_before))
