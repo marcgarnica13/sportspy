@@ -10,74 +10,173 @@ from openpyxl import load_workbook, Workbook
 from model.footballpy.fs.loader import dfl
 from model.match import Match
 
-header_list = [
-    'centroid_pre_x',
-    'centroid_pre_y',
-    'dist_centroid_pre',
-    'centroid_pre_a_x',
-    'centroid_pre_a_y',
-    'dist_centroid_pre_a',
-    'centroid_pre_d_x',
-    'centroid_pre_d_y',
-    'dist_centroid_pre_d',
-    'centroid_post_x',
-    'centroid_post_y',
-    'dist_centroid_post',
-    'centroid_post_a_x',
-    'centroid_post_a_y',
-    'dist_centroid_post_a',
-    'centroid_post_d_x',
-    'centroid_post_d_y',
-    'dist_centroid_post_d',
-    'dist_opp_ind_out',
-    'dist_opp_ind_out_a',
-    'dist_opp_ind_out_d',
-    'dist_opp_ind_in',
-    'dist_opp_ind_in_a',
-    'dist_opp_ind_in_d',
-    'team_l_pre',
-    'team_w_pre',
-    'team_lw_pre',
-    'team_l_pre_a',
-    'team_w_pre_a',
-    'team_lw_pre_a',
-    'team_l_pre_d',
-    'team_w_pre_d',
-    'team_lw_pre_d',
-    'team_l_post',
-    'team_w_post',
-    'team_lw_post',
-    'team_l_post_a',
-    'team_w_post_a',
-    'team_lw_post_a',
-    'team_l_post_d',
-    'team_w_post_d',
-    'team_lw_post_d',
-    'stretch_pre',
-    'stretch_pre_a',
-    'stretch_pre_d',
-    'stretch_post',
-    'stretch_post_a',
-    'stretch_post_d',
-    'dist_centroid_out',
-    'dist_centroid_out_a',
-    'dist_centroid_out_d',
-    'dist_centroid_in',
-    'dist_centroid_in_a',
-    'dist_centroid_in_d',
-    'dyadic_pre',
-    'dyadic_pre_a',
-    'dyadic_pre_d',
-    'dyadic_post',
-    'dyadic_post_a',
-    'dyadic_post_d',
-    'dist_opp_pre',
-    'dist_opp_pre_a',
-    'dist_opp_pre_d',
-    'dist_opp_post',
-    'dist_opp_post_a',
-    'dist_opp_post_d',
-]
+header_list = {
+    1: [
+        'centroid_pre_x',
+        'centroid_pre_y',
+        'dist_centroid_pre',
+        'centroid_pre_a_x',
+        'centroid_pre_a_y',
+        'dist_centroid_pre_a',
+        'centroid_pre_d_x',
+        'centroid_pre_d_y',
+        'dist_centroid_pre_d',
+        'centroid_post_x',
+        'centroid_post_y',
+        'dist_centroid_post',
+        'centroid_post_a_x',
+        'centroid_post_a_y',
+        'dist_centroid_post_a',
+        'centroid_post_d_x',
+        'centroid_post_d_y',
+        'dist_centroid_post_d'
+        ],
+    2: [
+        'dist_opp_ind_out',
+        'dist_opp_ind_out_a',
+        'dist_opp_ind_out_d',
+        'dist_opp_ind_in',
+        'dist_opp_ind_in_a',
+        'dist_opp_ind_in_d'
+        ],
+    3: [
+        'team_l_pre',
+        'team_w_pre',
+        'team_lw_pre',
+        'team_l_pre_a',
+        'team_w_pre_a',
+        'team_lw_pre_a',
+        'team_l_pre_d',
+        'team_w_pre_d',
+        'team_lw_pre_d',
+        'team_l_post',
+        'team_w_post',
+        'team_lw_post',
+        'team_l_post_a',
+        'team_w_post_a',
+        'team_lw_post_a',
+        'team_l_post_d',
+        'team_w_post_d',
+        'team_lw_post_d',
+        ],
+    4: [
+        'stretch_pre',
+        'stretch_pre_a',
+        'stretch_pre_d',
+        'stretch_post',
+        'stretch_post_a',
+        'stretch_post_d',
+        ],
+    5: [
+        'dist_centroid_out',
+        'dist_centroid_out_a',
+        'dist_centroid_out_d',
+        'dist_centroid_in',
+        'dist_centroid_in_a',
+        'dist_centroid_in_d'
+        ],
+    6: [
+        'dyadic_pre',
+        'dyadic_pre_a',
+        'dyadic_pre_d',
+        'dyadic_post',
+        'dyadic_post_a',
+        'dyadic_post_d',
+        ],
+    7: [
+        'dist_opp_pre',
+        'dist_opp_pre_a',
+        'dist_opp_pre_d',
+        'dist_opp_post',
+        'dist_opp_post_a',
+        'dist_opp_post_d'
+    ],
+    8: [
+        'pre_sc_home',
+        'pre_sc_guest',
+        'pre_sc_pitch_half1_h',
+        'pre_sc_pitch_half1_a',
+        'pre_sc_pitch_half2_h',
+        'pre_sc_pitch_half2_a',
+        'pre_sc_pitch_third1_h',
+        'pre_sc_pitch_third1_a',
+        'pre_sc_pitch_third2_h',
+        'pre_sc_pitch_third2_a',
+        'pre_sc_pitch_third3_h',
+        'pre_sc_pitch_third3_a',
+        'pre_sc_individual'
+
+        'pre_a_sc_home',
+        'pre_a_sc_guest',
+        'pre_a_sc_pitch_half1_h',
+        'pre_a_sc_pitch_half1_a',
+        'pre_a_sc_pitch_half2_h',
+        'pre_a_sc_pitch_half2_a',
+        'pre_a_sc_pitch_third1_h',
+        'pre_a_sc_pitch_third1_a',
+        'pre_a_sc_pitch_third2_h',
+        'pre_a_sc_pitch_third2_a',
+        'pre_a_sc_pitch_third3_h',
+        'pre_a_sc_pitch_third3_a',
+        'pre_a_sc_individual'
+
+        'pre_d_sc_home',
+        'pre_d_sc_guest',
+        'pre_d_sc_pitch_half1_h',
+        'pre_d_sc_pitch_half1_a',
+        'pre_d_sc_pitch_half2_h',
+        'pre_d_sc_pitch_half2_a',
+        'pre_d_sc_pitch_third1_h',
+        'pre_d_sc_pitch_third1_a',
+        'pre_d_sc_pitch_third2_h',
+        'pre_d_sc_pitch_third2_a',
+        'pre_d_sc_pitch_third3_h',
+        'pre_d_sc_pitch_third3_a',
+        'pre_d_sc_individual',
+
+        'post_sc_home',
+        'post_sc_guest',
+        'post_sc_pitch_half1_h',
+        'post_sc_pitch_half1_a',
+        'post_sc_pitch_half2_h',
+        'post_sc_pitch_half2_a',
+        'post_sc_pitch_third1_h',
+        'post_sc_pitch_third1_a',
+        'post_sc_pitch_third2_h',
+        'post_sc_pitch_third2_a',
+        'post_sc_pitch_third3_h',
+        'post_sc_pitch_third3_a',
+        'post_sc_individual'
+
+        'post_a_sc_home',
+        'post_a_sc_guest',
+        'post_a_sc_pitch_half1_h',
+        'post_a_sc_pitch_half1_a',
+        'post_a_sc_pitch_half2_h',
+        'post_a_sc_pitch_half2_a',
+        'post_a_sc_pitch_third1_h',
+        'post_a_sc_pitch_third1_a',
+        'post_a_sc_pitch_third2_h',
+        'post_a_sc_pitch_third2_a',
+        'post_a_sc_pitch_third3_h',
+        'post_a_sc_pitch_third3_a',
+        'post_a_sc_individual',
+
+        'post_d_sc_home',
+        'post_d_sc_guest',
+        'post_d_sc_pitch_half1_h',
+        'post_d_sc_pitch_half1_a',
+        'post_d_sc_pitch_half2_h',
+        'post_d_sc_pitch_half2_a',
+        'post_d_sc_pitch_third1_h',
+        'post_d_sc_pitch_third1_a',
+        'post_d_sc_pitch_third2_h',
+        'post_d_sc_pitch_third2_a',
+        'post_d_sc_pitch_third3_h',
+        'post_d_sc_pitch_third3_a',
+        'post_d_sc_individual'
+    ]
+}
 
 headers = {
     'Pdata': 'D',
@@ -112,21 +211,35 @@ def add_debug_log(folder, logger):
     ch.setFormatter(logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s'))
     logger.addHandler(ch)
 
+variables = [
+    'Team centroid',
+    'Individual Distance to nearest opponent',
+    'Team measures and ratio',
+    'Stretch index',
+    'Distance to centroid',
+    'Dyadic distance',
+    'Team distance to nearest opponent',
+    'Space control'
+]
+
 @click.command()
-@click.argument('test_file', type=click.Path(exists=True))
-@click.argument('input_folder', type=click.Path(exists=True))
-@click.argument('output_file', type=click.Path(), required=False)
-def run(test_file, input_folder, output_file):
+@click.option('--test_file', '-t', type=click.Path(exists=True), required=True, help='Path to the excel test file commanding the test')
+@click.option('--input_folder', '-i', type=click.Path(exists=True), required=True, help='Data folder path, match positions and information in the same folder')
+@click.option('--output_file', '-o', type=click.Path(), help='Desired output folder for the test files')
+@click.option('--variable', '-v', type=int, multiple=True, help='List of variables\n' + '\n'.join(['{}: {}'.format(i + 1, name) for i,name in enumerate(variables)]))
+def run(test_file, input_folder, output_file, variable):
     run_start_time = time.time()
     check_folder('logs')
     logging.config.fileConfig(fname=os.path.join('logging.ini'))
     logger = logging.getLogger()
     output_file = output_file or os.path.join('test')
+    variable = variable or [i + 1 for i,name in enumerate(variables)]
     add_debug_log(output_file, logger)
     logger.info('Starting test with the following inputs')
     logger.info('- Input folder: {}'.format(input_folder))
     logger.info('- Test file coordinating the test: {}'.format(test_file))
     logger.info('- Test output folder: {}'.format(output_file))
+    logger.info('- List of variables to compute: {}'.format(variable))
     m = Match(input_folder, logger)
     t_before = time.time()
     logger.debug('Match instance initialized in {} seconds'.format(time.time() - t_before))
@@ -158,7 +271,7 @@ def run(test_file, input_folder, output_file):
         row = controler[wb_idx]
         #Iniciar partido
         t_before = time.time()
-        logger.info('Loading {} match information'.format(row[header_dict['Pdata']]))
+        logger.info('Loading {} match information'.format(row[header_dict['Pdata']].value))
         load_result = m.load_match(logger_tag, row[header_dict['Pdata']].value, row[header_dict['MatchInformation']].value)
         if load_result:
             logger.info("Loading successfull after {} seconds".format(time.time() - t_before))
@@ -177,7 +290,7 @@ def run(test_file, input_folder, output_file):
             #Compute vars
             t_before = time.time()
             try:
-                test_results = m.run_test()
+                test_results = m.run_test(variable)
                 logger.info('Test results obtained in {} seconds'.format(time.time() - t_before))
                 logger.debug(test_results)
                 #Save results
@@ -205,12 +318,14 @@ def run(test_file, input_folder, output_file):
     for key, item in header_dict.items():
         result_wb_sheet.cell(row=1, column=item + 1).value = key
         column_count += 1
-    for header in header_list:
-        result_wb_sheet.cell(row=1, column=column_count).value = header
-        column_count += 1
+    for i in variable:
+        for header in header_list[i]:
+            result_wb_sheet.cell(row=1, column=column_count).value = header
+            column_count += 1
     result_wb.save(filename=os.path.join(output_file, 'test.xlsx').format(output_file))
     result_wb.close()
     logger.info('Test finished in {} seconds'.format(time.time() - run_start_time))
+
 
 
 

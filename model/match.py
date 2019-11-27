@@ -3,6 +3,7 @@ import time
 import numpy as np
 
 from model.footballpy.fs.loader import dfl
+import model.spaceControl
 
 class Match:
     def __init__(self, data, logger):
@@ -48,15 +49,16 @@ class Match:
         self.player_out = player_out
         self.player_in = player_in
 
-    def run_test(self):
+    def run_test(self, variables):
         self.lg.info('{} > Starting test execution'.format(self.tag))
         result_centroid = []
         result_distance = []
-        result_team_mesures = []
+        result_team_measures = []
         result_stretch = []
         result_distance_centroid = []
         result_dyadic = []
         result_distance_opp = []
+        result_space_control = []
 
         if self.location == 1:
             indexes = [0,1,4]
@@ -70,42 +72,63 @@ class Match:
             guest_players_list, g_factor = self._list_players(first_slice, 'guest')
             first_slice = first_slice[first_slice['game_state'] == 1]
             start_time = time.time()
-            result_centroid += [v for index, v in enumerate(self.team_centroid(first_slice[home_players_list], h_factor, first_slice[guest_players_list], g_factor)) if index in indexes]
-            centroid_time = time.time()
-            result_distance.append(self.distance_nearest_opp_ind(player, [first_slice[home_players_list], first_slice[guest_players_list]], self.location))
-            distance_ind_time = time.time()
-            result_team_mesures += self.team_length_width(first_slice[home_players_list if self.location == 1 else guest_players_list])
-            team_mesures_time = time.time()
-            result_stretch.append(self.stretch_index(first_slice[home_players_list if self.location == 1 else guest_players_list]))
-            stretch_time = time.time()
-            result_distance_centroid.append(self.distance_centroid(player, first_slice[home_players_list if self.location == 1 else guest_players_list]))
-            distance_centroid_time = time.time()
-            result_dyadic.append(self.dyadic_distance(first_slice[home_players_list if self.location == 1 else guest_players_list]))
-            dyadic_time = time.time()
-            result_distance_opp.append((self.distance_nearest_opp([first_slice[home_players_list], first_slice[guest_players_list]], self.location)))
-            distance_opp_time = time.time()
-
+            last_time = time.time()
             self.lg.debug('{} > Positional data indicators metrics: '.format(self.tag))
-            self.lg.debug('{} > - Team centroid: {} seconds'.format(self.tag, centroid_time - start_time))
-            self.lg.debug('{} > - Player distance to nearest opponent: {} seconds'.format(self.tag, distance_ind_time - centroid_time))
-            self.lg.debug('{} > - Team measures (width/length): {} seconds'.format(self.tag, team_mesures_time - distance_ind_time))
-            self.lg.debug('{} > - Team stretch: {} seconds'.format(self.tag, stretch_time - team_mesures_time))
-            self.lg.debug('{} > - Team distance to centroid: {} seconds'.format(self.tag, distance_centroid_time - stretch_time))
-            self.lg.debug('{} > - Team dyadic distance: {} seconds'.format(self.tag, dyadic_time - distance_centroid_time))
-            self.lg.debug('{} > - Team collective distance to nearest opponent: {} seconds'.format(self.tag, distance_opp_time - dyadic_time))
+            if 1 in variables:
+                result_centroid += [v for index, v in enumerate(self.team_centroid(first_slice[home_players_list], h_factor, first_slice[guest_players_list], g_factor)) if index in indexes]
+                last_time = time.time()
+                self.lg.debug('{} > - Team centroid: {} seconds'.format(self.tag, last_time - start_time))
+            if 2 in variables:
+                result_distance.append(self.distance_nearest_opp_ind(player, [first_slice[home_players_list], first_slice[guest_players_list]], self.location))
+                self.lg.debug('{} > - Player distance to nearest opponent: {} seconds'.format(self.tag, last_time - time.time()))
+            if 3 in variables:    
+                result_team_measures += self.team_length_width(first_slice[home_players_list if self.location == 1 else guest_players_list])
+                self.lg.debug('{} > - Team measures (width/length): {} seconds'.format(self.tag, last_time - time.time()))
+                last_time = time.time()
+            if 4 in variables:
+                result_stretch.append(self.stretch_index(first_slice[home_players_list if self.location == 1 else guest_players_list]))
+                self.lg.debug('{} > - Team stretch: {} seconds'.format(self.tag, last_time - time.time()))
+                last_time = time.time()
+            if 5 in variables:
+                result_distance_centroid.append(self.distance_centroid(player, first_slice[home_players_list if self.location == 1 else guest_players_list]))
+                self.lg.debug('{} > - Team distance to centroid: {} seconds'.format(self.tag, last_time - time.time()))
+                last_time = time.time()
+            if 6 in variables:
+                result_dyadic.append(self.dyadic_distance(first_slice[home_players_list if self.location == 1 else guest_players_list]))
+                self.lg.debug('{} > - Team dyadic distance: {} seconds'.format(self.tag, last_time - time.time()))
+                last_time = time.time()
+            if 7 in variables:
+                result_distance_opp.append((self.distance_nearest_opp([first_slice[home_players_list], first_slice[guest_players_list]], self.location)))
+                self.lg.debug('{} > - Team collective distance to nearest opponent: {} seconds'.format(self.tag, last_time - time.time()))
+                last_time = time.time()
+            if 8 in variables:
+                result_space_control += model.spaceControl.run(first_slice, int(self.match['stadium']['width']), int(self.match['stadium']['length']), self.teams, player, h_factor if self.location == 1 else g_factor)
+                self.lg.debug('{} > - Team space control'.format(self.tag, last_time, time.time()))
+                last_time = time.time()
 
             for e in [first_slice['possession'] == self.location, first_slice['possession'] != self.location]:
                 self.lg.debug('{} > Testing with possession'.format(self.tag))
                 poss_filtered = first_slice[e]
-                result_centroid += [v for index, v in enumerate(self.team_centroid(poss_filtered[home_players_list], h_factor, poss_filtered[guest_players_list], g_factor)) if index in indexes]
-                result_distance.append(self.distance_nearest_opp_ind(player, [poss_filtered[home_players_list], poss_filtered[guest_players_list]], self.location))
-                result_team_mesures += self.team_length_width(poss_filtered[home_players_list if self.location == 1 else guest_players_list])
-                result_stretch.append(self.stretch_index(poss_filtered[home_players_list if self.location == 1 else guest_players_list]))
-                result_distance_centroid.append(self.distance_centroid(player, poss_filtered[home_players_list if self.location == 1 else guest_players_list]))
-                result_dyadic.append(self.dyadic_distance(poss_filtered[home_players_list if self.location == 1 else guest_players_list]))
-                result_distance_opp.append((self.distance_nearest_opp([poss_filtered[home_players_list], poss_filtered[guest_players_list]], self.location)))
+                if 1 in variables:
+                    result_centroid += [v for index, v in enumerate(self.team_centroid(poss_filtered[home_players_list], h_factor, poss_filtered[guest_players_list], g_factor)) if index in indexes]
+                if 2 in variables:
+                    result_distance.append(self.distance_nearest_opp_ind(player, [poss_filtered[home_players_list], poss_filtered[guest_players_list]], self.location))
+                if 3 in variables:
+                    result_team_measures += self.team_length_width(poss_filtered[home_players_list if self.location == 1 else guest_players_list])
+                if 4 in variables:
+                    result_stretch.append(self.stretch_index(poss_filtered[home_players_list if self.location == 1 else guest_players_list]))
+                if 5 in variables:
+                    result_distance_centroid.append(self.distance_centroid(player, poss_filtered[home_players_list if self.location == 1 else guest_players_list]))
+                if 6 in variables:
+                    result_dyadic.append(self.dyadic_distance(poss_filtered[home_players_list if self.location == 1 else guest_players_list]))
+                if 7 in variables:
+                    result_distance_opp.append((self.distance_nearest_opp([poss_filtered[home_players_list], poss_filtered[guest_players_list]], self.location)))
+                if 8 in variables:
+                    result_space_control += model.spaceControl.run(poss_filtered, int(self.match['stadium']['width']),
+                                                                   int(self.match['stadium']['length']), self.teams,
+                                                                   player, h_factor if self.location == 1 else g_factor)
 
-        return result_centroid + result_distance + result_team_mesures + result_stretch + result_distance_centroid + result_dyadic + result_distance_opp
+        return result_centroid + result_distance + result_team_measures + result_stretch + result_distance_centroid + result_dyadic + result_distance_opp + result_space_control
 
     def _list_players(self, data_slice, team):
         self.lg.debug('{} > _list_players function'.format(self.tag))
