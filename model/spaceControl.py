@@ -35,6 +35,7 @@ def calc_space_control(pdata, n_ver_cells, n_hor_cells):
         for i in range(n_hor_cells):
             for j in range(n_ver_cells):
                 for p in range(no_players):
+                    print('{} frame out of {}'.format(f, no_frames), end="\r")
                     player = pdata.columns[p*2]
                     player_id = player.split('_')[0]
                     distance = np.sqrt(((i-52) - pdata.iloc[f,(p*2)])**2 + ((j-33.5) - pdata.iloc[f,(p*2+1)])**2)
@@ -83,14 +84,27 @@ def sum_functions(num_cells_per_player, lista, factor):
         space_control_pitch_third2_h, space_control_pitch_third2_a = np.sum(num_cells_per_player[4,:,:nplayer], axis = 1), np.sum(num_cells_per_player[4,:,nplayer:], axis = 1)
         space_control_pitch_third1_h, space_control_pitch_third1_a = np.sum(num_cells_per_player[5,:,:nplayer], axis = 1), np.sum(num_cells_per_player[5,:,nplayer:], axis = 1)
 
-    return [np.mean(space_control_home), np.mean(space_control_away), np.mean(space_control_pitch_half1_h), np.mean(space_control_pitch_half1_a), np.mean(space_control_pitch_half2_h), np.mean(space_control_pitch_half2_a), np.mean(space_control_pitch_third1_h), np.mean(space_control_pitch_third1_a), np.mean(space_control_pitch_third2_h), np.mean(space_control_pitch_third2_a), np.mean(space_control_pitch_third3_h), np.mean(space_control_pitch_third3_a)]
+    return [
+        np.mean(space_control_home),
+        np.mean(space_control_away),
+        np.mean(space_control_pitch_half1_h),
+        np.mean(space_control_pitch_half1_a),
+        np.mean(space_control_pitch_half2_h),
+        np.mean(space_control_pitch_half2_a),
+        np.mean(space_control_pitch_third1_h),
+        np.mean(space_control_pitch_third1_a),
+        np.mean(space_control_pitch_third2_h),
+        np.mean(space_control_pitch_third2_a),
+        np.mean(space_control_pitch_third3_h),
+        np.mean(space_control_pitch_third3_a)
+    ]
 
 def sum_ind_function(num_cells_per_player, player_id, players_index):
     space_control = np.mean(num_cells_per_player[0,:,players_index[player_id]])
     return space_control
 
 def run(pdata, width, length, teams, player, factor):
-    pdata_onesecond = pdata[::10000]
+    pdata_onesecond = pdata[::1000]
     clean_for_space_control(pdata_onesecond)
     players_matrix, player_index = calc_space_control(pdata_onesecond, width, length)
     team_space_control = sum_functions(players_matrix, list_players_space_control(pdata, teams), factor)

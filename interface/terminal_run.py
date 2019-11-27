@@ -104,7 +104,7 @@ header_list = {
         'pre_sc_pitch_third2_a',
         'pre_sc_pitch_third3_h',
         'pre_sc_pitch_third3_a',
-        'pre_sc_individual'
+        'pre_sc_individual',
 
         'pre_a_sc_home',
         'pre_a_sc_guest',
@@ -118,7 +118,7 @@ header_list = {
         'pre_a_sc_pitch_third2_a',
         'pre_a_sc_pitch_third3_h',
         'pre_a_sc_pitch_third3_a',
-        'pre_a_sc_individual'
+        'pre_a_sc_individual',
 
         'pre_d_sc_home',
         'pre_d_sc_guest',
@@ -146,7 +146,7 @@ header_list = {
         'post_sc_pitch_third2_a',
         'post_sc_pitch_third3_h',
         'post_sc_pitch_third3_a',
-        'post_sc_individual'
+        'post_sc_individual',
 
         'post_a_sc_home',
         'post_a_sc_guest',
@@ -191,7 +191,6 @@ headers = {
     'PlayerOUT': 'U',
     'PlayerOUT': 'U',
     'PlayerOUT': 'U',
-
 }
 
 def check_folder(dir_path, create=True):
@@ -227,7 +226,9 @@ variables = [
 @click.option('--input_folder', '-i', type=click.Path(exists=True), required=True, help='Data folder path, match positions and information in the same folder')
 @click.option('--output_file', '-o', type=click.Path(), help='Desired output folder for the test files')
 @click.option('--variable', '-v', type=int, multiple=True, help='List of variables\n' + '\n'.join(['{}: {}'.format(i + 1, name) for i,name in enumerate(variables)]))
-def run(test_file, input_folder, output_file, variable):
+@click.option('--initial_row', '-irow', type=int, help='Initial row')
+@click.option('--final_row', '-frow', type=int, help='Final row')
+def run(test_file, input_folder, output_file, variable, initial_row, final_row):
     run_start_time = time.time()
     check_folder('logs')
     logging.config.fileConfig(fname=os.path.join('logging.ini'))
@@ -248,7 +249,7 @@ def run(test_file, input_folder, output_file, variable):
     controler = load_workbook(test_file).get_sheet_by_name('Subs')
     logger.debug('Test controlled file read in {} seconds'.format(time.time() - t_before))
     logger.info('Test file loaded')
-    test_file_rows = controler.max_row
+    test_file_rows = (final_row or controler.max_row) - (initial_row or 0)
     test_file_columns = controler.max_column
     logger.debug('Test file contains {} rows and {} columns'.format(test_file_rows, test_file_columns))
     wb_idx = 1
@@ -261,10 +262,10 @@ def run(test_file, input_folder, output_file, variable):
     result_wb_sheet.title = 'Run'
     for cell in header:
         header_dict[cell.value] = cell.column - 1
-    wb_idx += 1
+    wb_idx = initial_row or 2
     logger.debug('Header information extracted in {} seconds'.format(time.time() - t_before))
     result_row_count = 2
-    while (wb_idx <= controler.max_row):
+    while (wb_idx <= (final_row or controler.max_row)):
         row_start_time = time.time()
         logger.info('Processing row {} out of {}'.format(wb_idx, test_file_rows))
         logger_tag = "{} / {}".format(wb_idx, test_file_rows)
