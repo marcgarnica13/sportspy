@@ -120,5 +120,3 @@ def run(pdata, width, length, teams, player, factor):
 
 
 
-
-
